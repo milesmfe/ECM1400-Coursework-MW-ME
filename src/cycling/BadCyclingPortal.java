@@ -3,6 +3,10 @@ package cycling;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+import cycling.CyclingRace;
+import cycling.CyclingRaceStage;
 
 
 /**
@@ -15,10 +19,11 @@ import java.time.LocalTime;
  */
 public class BadCyclingPortal implements CyclingPortalInterface {
 
+    private Map<Integer, CyclingRace> racesByID = new HashMap<Integer, CyclingRace>();
+
 	@Override
 	public int[] getRaceIds() {
-		// TODO Auto-generated method stub
-		return null;
+		return racesByID.keySet().stream().mapToInt(i->i).toArray();
 	}
 
 	@Override
@@ -70,6 +75,8 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 		// TODO Auto-generated method stub
 
 	}
+
+	// ---------------------------- 02/03/2022 Design Stage ---------------------------- //
 
 	@Override
 	public int addCategorizedClimbToStage(int stageId, Double location, SegmentType type, Double averageGradient,
