@@ -3,11 +3,10 @@ package cycling;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import cycling.CyclingRace;
-import cycling.CyclingRaceStage;
-
+import java.util.stream.IntStream;
 
 /**
  * BadCyclingPortal is a minimally compiling, but non-functioning implementor
@@ -19,61 +18,62 @@ import cycling.CyclingRaceStage;
  */
 public class BadCyclingPortal implements CyclingPortalInterface {
 
-    private Map<Integer, CyclingRace> racesByID = new HashMap<Integer, CyclingRace>();
+    private ArrayList<Integer> racesById = new ArrayList<Integer>();
+	private HashMap<Integer, Race> raceTable = new HashMap<Integer, Race>();
+
+	public Race getRace(int id) {
+		return raceTable.get(id);
+	}
 
 	@Override
 	public int[] getRaceIds() {
-		return racesByID.keySet().stream().mapToInt(i->i).toArray();
+		return racesById.stream().mapToInt(i -> i).toArray();
 	}
 
 	@Override
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
-		// TODO Auto-generated method stub
-		return 0;
+		Race newRace = new Race(name, description);
+		racesById.add(newRace.getId());
+		raceTable.put(newRace.getId(), newRace);
+		return newRace.getId();
 	}
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		return raceTable.get(raceId).getDetails();
 	}
 
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		raceTable.remove(raceId);
+		racesById.remove(raceId);
 	}
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return 0;
+		return raceTable.get(raceId).getStages().length;
 	}
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime,
 			StageType type)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
-		// TODO Auto-generated method stub
-		return 0;
+			raceTable.get(raceId).addStage(new Stage(stageName, description, length, startTime));
+			return 0;
 	}
 
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		return raceTable.get(raceId).getStages();
 	}
 
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
 	}
 
 	// ---------------------------- 02/03/2022 Design Stage ---------------------------- //

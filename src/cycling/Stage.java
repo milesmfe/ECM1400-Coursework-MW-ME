@@ -2,12 +2,12 @@ package cycling;
 
 import java.time.LocalDateTime;
 
-public class CyclingRaceStage extends CyclingObject {
+public class Stage extends CyclingObject {
 
     private double length;
     private LocalDateTime startTime;
     
-    public CyclingRaceStage(String name, String description, double _length, LocalDateTime _startTime) {
+    public Stage(String name, String description, double _length, LocalDateTime _startTime) {
         super(name, description);
         length = _length;
         startTime = _startTime;
