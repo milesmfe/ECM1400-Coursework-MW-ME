@@ -20,6 +20,9 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 
 	private HashMap<Integer, Race> raceTable = new HashMap<Integer, Race>();
 	private HashMap<Integer, Stage> stageTable = new HashMap<Integer, Stage>();
+	private HashMap<Integer, Segment> segmentTable = new HashMap<Integer, Segment>();
+	private HashMap<Integer, Team> teamTable = new HashMap<Integer, Team>();
+	private HashMap<Integer, Rider> riderTable = new HashMap<Integer, Rider>();
 	
 	public Race getRace(int id) {
 		return raceTable.get(id);
@@ -27,6 +30,18 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 	
 	public Stage getStage(int id) {
 		return stageTable.get(id);
+	}
+
+	public Segment getSegment(int id) {
+		return segmentTable.get(id);
+	}
+
+	public Team getTeam(int id) {
+		return teamTable.get(id);
+	}
+
+	public Rider getRider(int id) {
+		return riderTable.get(id);
 	}
 
 	@Override
