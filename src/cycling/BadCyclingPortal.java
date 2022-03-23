@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.IntStream;
 
 /**
  * BadCyclingPortal is a minimally compiling, but non-functioning implementor
@@ -16,24 +15,29 @@ import java.util.stream.IntStream;
  * @version 1.0
  *
  */
+
 public class BadCyclingPortal implements CyclingPortalInterface {
 
-    private ArrayList<Integer> racesById = new ArrayList<Integer>();
 	private HashMap<Integer, Race> raceTable = new HashMap<Integer, Race>();
-
+	private HashMap<Integer, Stage> stageTable = new HashMap<Integer, Stage>();
+	
 	public Race getRace(int id) {
 		return raceTable.get(id);
+	}
+	
+	public Stage getStage(int id) {
+		return stageTable.get(id);
 	}
 
 	@Override
 	public int[] getRaceIds() {
-		return racesById.stream().mapToInt(i -> i).toArray();
+		Integer[] ids = raceTable.keySet().toArray(new Integer[raceTable.size()]);
+		return Arrays.stream(ids).mapToInt(Integer::intValue).toArray();
 	}
 
 	@Override
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
 		Race newRace = new Race(name, description);
-		racesById.add(newRace.getId());
 		raceTable.put(newRace.getId(), newRace);
 		return newRace.getId();
 	}
@@ -46,34 +50,50 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		raceTable.remove(raceId);
-		racesById.remove(raceId);
 	}
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		return raceTable.get(raceId).getStages().length;
+		int count = 0;
+		for (Stage stage : stageTable.values().toArray(new Stage[stageTable.size()])) {
+			if (stage.getRaceId() == raceId) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime,
 			StageType type)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
-			raceTable.get(raceId).addStage(new Stage(stageName, description, length, startTime));
+			Stage newStage = new Stage(stageName, description, length, startTime, type, raceId);
+			stageTable.put(newStage.getId(), newStage);
 			return 0;
 	}
 
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
-		return raceTable.get(raceId).getStages();
+		ArrayList<Integer> stages = new ArrayList<Integer>();
+		for (Stage stage : stageTable.values().toArray(new Stage[stageTable.size()])) {
+			if (stage.getRaceId() == raceId) {
+				stages.add(stage.getId());
+			}
+		}	
+		return Arrays.stream(stages
+			.toArray(new Integer[stages.size()]))
+			.mapToInt(Integer::intValue)
+			.toArray();
 	}
 
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
-		return 0;
+		return stageTable.get(stageId).getLength();
 	}
 
 	@Override
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
+		stageTable.remove(stageId);
 	}
 
 	// ---------------------------- 02/03/2022 Design Stage ---------------------------- //
@@ -218,8 +238,11 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void removeRaceByName(String name) throws NameNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		for (Race race : raceTable.values().toArray(new Race[raceTable.size()])) {
+			if (race.getName() == name) {
+				raceTable.remove(race.getId());
+			}
+		}
 	}
 
 	@Override
