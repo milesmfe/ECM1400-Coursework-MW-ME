@@ -15,8 +15,4 @@ public class Race extends NamedCyclingObject {
     public Race(String name, String description) {
         super(name, description);
     }
-
-    public String getDetails() {
-        return String.format("Name: %s, Description: %s%n", getName(), getDescription());
-    }
 }
