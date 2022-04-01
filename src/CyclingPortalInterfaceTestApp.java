@@ -1,12 +1,9 @@
-import java.time.LocalDateTime;
-
-import cycling.BadCyclingPortal;
-import cycling.CyclingPortalInterface;
+import java.io.IOException;
+import cycling.CyclingPortal;
 import cycling.IDNotRecognisedException;
 import cycling.IllegalNameException;
 import cycling.InvalidLengthException;
 import cycling.InvalidNameException;
-import cycling.StageType;
 
 /**
  * A short program to illustrate an app testing some minimal functionality of a
@@ -28,21 +25,55 @@ public class CyclingPortalInterfaceTestApp {
 	 * @throws IllegalNameException
 	 * @throws InvalidLengthException
 	 * @throws IDNotRecognisedException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) throws IllegalNameException, InvalidNameException, IDNotRecognisedException, InvalidLengthException {
+	public static void main(String[] args) throws IllegalNameException, InvalidNameException, IDNotRecognisedException, InvalidLengthException, IOException, ClassNotFoundException {
 		System.out.println("The system compiled and started the execution...");
 
 //		MiniCyclingPortalInterface portal = new BadMiniCyclingPortal();
-		CyclingPortalInterface portal = new BadCyclingPortal();
+		CyclingPortal portal = new CyclingPortal();
 
-		portal.createRace("Test", "This is a test");	
-		portal.addStageToRace(0, "Test", "description", 3.3, LocalDateTime.now(), StageType.FLAT);
+		/* portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+		portal.createRace("name", "description");
+
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+		portal.createTeam("name", "description");
+
+
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+		portal.createRider(15, "name", 5);
+
+		portal.saveCyclingPortal("data.json"); */
+
+		portal.loadCyclingPortal("data.json");
+
 		for (int id : portal.getRaceIds()) {
 			System.out.println(id);
 		}
-		System.out.println(portal.getStageLength(1));
-		for (int stageid : portal.getRaceStages(0)) {
-			System.out.println(stageid);
+		
+		for (int id : portal.getTeamRiders(15)) {
+			System.out.println(id);
 		}
 
 		assert (portal.getRaceIds().length == 0)

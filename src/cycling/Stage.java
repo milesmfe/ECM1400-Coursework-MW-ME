@@ -8,22 +8,21 @@ import java.time.LocalDateTime;
      * Cycling Stages
      * 
      * @author Miles Edwards
-     * @author Max Ward
      * @version 1.0
      * 
      */
 
-public class Stage extends CyclingObject {
+public class Stage extends NamedCyclingObject {
 
+    
     private double length;
     private LocalDateTime startTime;
     private int raceId;
     private StageType stageType;
     
-    public Stage(String name, String description, double _length, LocalDateTime _startTime, 
+    public Stage(String _name, String _description, double _length, LocalDateTime _startTime,        
     StageType type, int _raceId) {
-        
-        super(name, description);
+        super(_name, _description);
         length = _length;
         startTime = _startTime;
         stageType = type;

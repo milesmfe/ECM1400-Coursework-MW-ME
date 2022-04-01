@@ -6,12 +6,11 @@ package cycling;
      * Cycling Races
      * 
      * @author Miles Edwards
-     * @author Max Ward
      * @version 1.0
      * 
      */
 
-public class Race extends CyclingObject {
+public class Race extends NamedCyclingObject {
 
     public Race(String name, String description) {
         super(name, description);

@@ -1,6 +1,10 @@
 package cycling;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -8,41 +12,37 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * BadCyclingPortal is a minimally compiling, but non-functioning implementor
- * of the CyclingPortalInterface interface.
  * 
- * @author Diogo Pacheco
+ * CyclingPortal is the completed version of BadMiniCyclingPortal containing my
+ * solution to the assignment.
+ * 
+ * @author Miles Edwards
  * @version 1.0
  *
  */
 
-public class BadCyclingPortal implements CyclingPortalInterface {
+public class CyclingPortal implements MiniCyclingPortalInterface {
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 * All portal data is stored in a collection of maps, "Tables".
+	 * 
+	 * Data is stored as serialisable objects while the program is being executed.
+	 * 
+	 * These objects may then be serialised and stored in a json file or sent over a network.
+	 * 
+	 * "Tables" are necessary so that objects, and their enclosed relations,
+	 * may be referenced easily using the corresponding ID number.
+	 * 
+	 */
 
 	private HashMap<Integer, Race> raceTable = new HashMap<Integer, Race>();
 	private HashMap<Integer, Stage> stageTable = new HashMap<Integer, Stage>();
 	private HashMap<Integer, Segment> segmentTable = new HashMap<Integer, Segment>();
 	private HashMap<Integer, Team> teamTable = new HashMap<Integer, Team>();
 	private HashMap<Integer, Rider> riderTable = new HashMap<Integer, Rider>();
-	
-	public Race getRace(int id) {
-		return raceTable.get(id);
-	}
-	
-	public Stage getStage(int id) {
-		return stageTable.get(id);
-	}
-
-	public Segment getSegment(int id) {
-		return segmentTable.get(id);
-	}
-
-	public Team getTeam(int id) {
-		return teamTable.get(id);
-	}
-
-	public Rider getRider(int id) {
-		return riderTable.get(id);
-	}
 
 	@Override
 	public int[] getRaceIds() {
@@ -111,27 +111,26 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 		stageTable.remove(stageId);
 	}
 
-	// ---------------------------- 02/03/2022 Design Stage ---------------------------- //
-
 	@Override
 	public int addCategorizedClimbToStage(int stageId, Double location, SegmentType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
-		// TODO Auto-generated method stub
-		return 0;
+		Segment newSegment = new Segment(stageId, location, type, averageGradient);
+		segmentTable.put(newSegment.getId(), newSegment);
+		return newSegment.getId();
 	}
 
 	@Override
 	public int addIntermediateSprintToStage(int stageId, double location) throws IDNotRecognisedException,
 			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException {
-		// TODO Auto-generated method stub
-		return 0;
+		Segment newSegment = new Segment(stageId, location, SegmentType.SPRINT);
+		segmentTable.put(newSegment.getId(), newSegment);
+		return newSegment.getId();
 	}
 
 	@Override
 	public void removeSegment(int segmentId) throws IDNotRecognisedException, InvalidStageStateException {
-		// TODO Auto-generated method stub
-
+		segmentTable.remove(segmentId);
 	}
 
 	@Override
@@ -142,45 +141,61 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getStageSegments(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Integer> segments = new ArrayList<Integer>();
+		for (Segment segment : segmentTable.values().toArray(new Segment[segmentTable.size()])) {
+			if (segment.getStageId() == stageId) {
+				segments.add(segment.getId());
+			}
+		}	
+		return Arrays.stream(segments
+			.toArray(new Integer[segments.size()]))
+			.mapToInt(Integer::intValue)
+			.toArray();
 	}
 
 	@Override
 	public int createTeam(String name, String description) throws IllegalNameException, InvalidNameException {
-		// TODO Auto-generated method stub
-		return 0;
+		Team newTeam = new Team(name, description);
+		teamTable.put(newTeam.getId(), newTeam);
+		return newTeam.getId();
 	}
 
 	@Override
 	public void removeTeam(int teamId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		teamTable.remove(teamId);
 	}
 
 	@Override
 	public int[] getTeams() {
-		// TODO Auto-generated method stub
-		return null;
+		Integer[] ids = teamTable.keySet().toArray(new Integer[teamTable.size()]);
+		return Arrays.stream(ids).mapToInt(Integer::intValue).toArray();
 	}
 
 	@Override
 	public int[] getTeamRiders(int teamId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Integer> riders = new ArrayList<Integer>();
+		for (Rider rider : riderTable.values().toArray(new Rider[riderTable.size()])) {
+			if (rider.getTeamId() == teamId) {
+				riders.add(rider.getId());
+			}
+		}	
+		return Arrays.stream(riders
+			.toArray(new Integer[riders.size()]))
+			.mapToInt(Integer::intValue)
+			.toArray();
 	}
 
 	@Override
-	public int createRider(int teamID, String name, int yearOfBirth)
+	public int createRider(int teamId, String name, int yearOfBirth)
 			throws IDNotRecognisedException, IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return 0;
+		Rider newRider = new Rider(name, yearOfBirth, teamId);
+		riderTable.put(newRider.getId(), newRider);
+		return newRider.getId();
 	}
 
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		riderTable.remove(riderId);
 	}
 
 	@Override
@@ -235,65 +250,32 @@ public class BadCyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void eraseCyclingPortal() {
-		// TODO Auto-generated method stub
-
+		raceTable.clear();
+		stageTable.clear();
+		segmentTable.clear();
+		teamTable.clear();
+		riderTable .clear();
 	}
 
 	@Override
 	public void saveCyclingPortal(String filename) throws IOException {
-		// TODO Auto-generated method stub
-
+		FileOutputStream fileOutputStream = new FileOutputStream(filename);
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+		objectOutputStream.writeObject(this);
+		objectOutputStream.close();
 	}
 
 	@Override
 	public void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeRaceByName(String name) throws NameNotRecognisedException {
-		for (Race race : raceTable.values().toArray(new Race[raceTable.size()])) {
-			if (race.getName() == name) {
-				raceTable.remove(race.getId());
-			}
-		}
-	}
-
-	@Override
-	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int[] getRidersPointsInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int[] getRidersMountainPointsInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int[] getRidersPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int[] getRidersMountainPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		FileInputStream fileInputStream = new FileInputStream(filename);
+		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+		CyclingPortal deserialized = (CyclingPortal) objectInputStream.readObject();
+		objectInputStream.close();
+		raceTable = deserialized.raceTable;
+		stageTable = deserialized.stageTable;
+		segmentTable = deserialized.segmentTable;
+		teamTable = deserialized.teamTable;
+		riderTable  = deserialized.riderTable;
 	}
 
 }
